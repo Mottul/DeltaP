@@ -1,4 +1,3 @@
-import { pdf } from "@react-pdf/renderer";
 import { useMemo, useState } from "react";
 import { FluidPanel } from "./components/FluidPanel";
 import { ResultsView } from "./components/ResultsView";
@@ -6,7 +5,6 @@ import { SectionEditor } from "./components/SectionEditor";
 import { calcTotal } from "./engine/calc";
 import { resolveFluid } from "./engine/fluids";
 import { flowToSI } from "./engine/units";
-import { Report } from "./pdf/Report";
 import { useStore } from "./state/store";
 
 const flowUnitLabel: Record<string, string> = { m3h: "m³/h", lmin: "l/min", ls: "l/s" };
@@ -30,6 +28,10 @@ export default function App() {
   async function exportPdf() {
     setExporting(true);
     try {
+      const [{ pdf }, { Report }] = await Promise.all([
+        import("@react-pdf/renderer"),
+        import("./pdf/Report"),
+      ]);
       const blob = await pdf(
         <Report
           projectName={state.projectName}
